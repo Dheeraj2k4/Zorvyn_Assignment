@@ -1,0 +1,150 @@
+// Reusable donut chart showing spending breakdown by category with percentage labels and a legend
+import { useMemo } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+
+const CATEGORY_COLORS = {
+  Food:     '#2ab5a5',
+  Travel:   '#2d3748',
+  Shopping: '#6b8fa8',
+  Bills:    '#a8ccd8',
+};
+const FALLBACK_COLOR = '#94a3b8';
+
+const DEFAULT_DATA = [
+  { name: 'Food',     value: 35, color: '#2ab5a5' },
+  { name: 'Travel',   value: 25, color: '#2d3748' },
+  { name: 'Shopping', value: 20, color: '#6b8fa8' },
+  { name: 'Bills',    value: 20, color: '#a8ccd8' },
+];
+
+const RADIAN = Math.PI / 180;
+
+const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="middle"
+      dominantBaseline="central"
+      style={{
+        fontFamily: "'Poppins', sans-serif",
+        fontSize: '13px',
+        fontWeight: '600',
+        fill: '#ffffff',
+      }}
+    >
+      {`${Math.round(percent * 100)}%`}
+    </text>
+  );
+};
+
+export default function SpendingCategoryChart({ transactions = [], title = 'Spending Category' }) {
+  const chartData = useMemo(() => {
+    const expenses = transactions.filter(t => t.type === 'Expense');
+    if (expenses.length === 0) return DEFAULT_DATA;
+
+    const totals = {};
+    expenses.forEach(t => {
+      totals[t.category] = (totals[t.category] || 0) + t.amount;
+    });
+    return Object.entries(totals)
+      .map(([name, amount]) => ({
+        name,
+        value: amount,   // raw amount — Recharts computes percent accurately
+        color: CATEGORY_COLORS[name] || FALLBACK_COLOR,
+      }))
+      .sort((a, b) => b.value - a.value);
+  }, [transactions]);
+  return (
+    <div
+      style={{
+        backgroundColor: '#d6e8f0',
+        borderRadius: '20px',
+        padding: '24px',
+        fontFamily: "'Poppins', sans-serif",
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        height: '100%',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Title */}
+      <h3
+        style={{
+          margin: 0,
+          fontSize: '18px',
+          fontWeight: '700',
+          color: '#111827',
+          fontFamily: "'Poppins', sans-serif",
+          flexShrink: 0,
+        }}
+      >
+        {title}
+      </h3>
+
+      {/* Chart + Legend row — fills remaining space */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '16px', minHeight: 0 }}>
+        {/* Donut — fills available height */}
+        <div style={{ flex: 1, height: '100%', minHeight: '200px', outline: 'none' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                innerRadius={65}
+                outerRadius={105}
+                paddingAngle={2}
+                dataKey="value"
+                labelLine={false}
+                label={renderCustomLabel}
+                stroke="none"
+                startAngle={90}
+                endAngle={-270}
+                isAnimationActive={true}
+                activeShape={{ stroke: 'none', strokeWidth: 0 }}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Legend */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {chartData.map((entry) => (
+            <div key={entry.name} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '3px',
+                  backgroundColor: entry.color,
+                  flexShrink: 0,
+                  display: 'inline-block',
+                }}
+              />
+              <span
+                style={{
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  fontFamily: "'Poppins', sans-serif",
+                }}
+              >
+                {entry.name}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
