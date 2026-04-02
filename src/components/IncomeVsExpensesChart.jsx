@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
+import { useFinanceStore } from '../store/useFinanceStore';
 
 const defaultData = [
   { label: 'Jan', income: 5780,  expenses: 1444 },
@@ -90,10 +91,18 @@ const CustomDot = (props) => {
 };
 
 export default function IncomeVsExpensesChart({ data = defaultData, title = 'Income vs Expenses' }) {
+  const isDark = useFinanceStore(s => s.theme === 'dark');
+  const tickColor     = isDark ? '#8A8FA8' : '#6b7280';
+  const gridColor     = isDark ? '#2A2D3E' : '#b8cdd6';
+  const incomeStroke  = isDark ? '#2DD4BF' : '#4bbfd4';
+  const expenseStroke = isDark ? '#8A8FA8' : '#374151';
+  const panelBg       = isDark ? '#1E2130' : '#d6e8f0';
+  const legendText    = isDark ? '#C0C5D8' : '#374151';
+
   return (
     <div
       style={{
-        backgroundColor: '#d6e8f0',
+        backgroundColor: panelBg,
         borderRadius: '20px',
         padding: '28px 24px 16px',
         fontFamily: "'Poppins', sans-serif",
@@ -102,16 +111,16 @@ export default function IncomeVsExpensesChart({ data = defaultData, title = 'Inc
     >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827', fontFamily: "'Poppins', sans-serif" }}>
+        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--c-text-1)', fontFamily: "'Poppins', sans-serif" }}>
           {title}
         </h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '13px', fontWeight: '500', color: '#374151' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '13px', fontWeight: '500', color: legendText }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-            <span style={{ display: 'inline-block', width: '24px', height: '2.5px', backgroundColor: '#4bbfd4', borderRadius: '2px' }} />
+            <span style={{ display: 'inline-block', width: '24px', height: '2.5px', backgroundColor: incomeStroke, borderRadius: '2px' }} />
             Income
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-            <span style={{ display: 'inline-block', width: '24px', height: '2.5px', backgroundColor: '#374151', borderRadius: '2px' }} />
+            <span style={{ display: 'inline-block', width: '24px', height: '2.5px', backgroundColor: expenseStroke, borderRadius: '2px' }} />
             Expenses
           </span>
         </div>
@@ -123,18 +132,18 @@ export default function IncomeVsExpensesChart({ data = defaultData, title = 'Inc
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#4bbfd4" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="#4bbfd4" stopOpacity={0} />
+                <stop offset="0%" stopColor={incomeStroke} stopOpacity={0.25} />
+                <stop offset="100%" stopColor={incomeStroke} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="expensesGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#374151" stopOpacity={0.12} />
-                <stop offset="100%" stopColor="#374151" stopOpacity={0} />
+                <stop offset="0%" stopColor={expenseStroke} stopOpacity={0.12} />
+                <stop offset="100%" stopColor={expenseStroke} stopOpacity={0} />
               </linearGradient>
             </defs>
 
             <CartesianGrid
               strokeDasharray=""
-              stroke="#b8cdd6"
+              stroke={gridColor}
               strokeWidth={1}
               vertical={false}
             />
@@ -146,7 +155,7 @@ export default function IncomeVsExpensesChart({ data = defaultData, title = 'Inc
               tick={{
                 fontFamily: "'Poppins', sans-serif",
                 fontSize: 12,
-                fill: '#6b7280',
+                fill: tickColor,
                 fontWeight: 500,
               }}
               dy={8}
@@ -159,34 +168,34 @@ export default function IncomeVsExpensesChart({ data = defaultData, title = 'Inc
               tick={{
                 fontFamily: "'Poppins', sans-serif",
                 fontSize: 12,
-                fill: '#6b7280',
+                fill: tickColor,
                 fontWeight: 500,
               }}
             />
 
             <Tooltip
               content={<CustomTooltip />}
-              cursor={{ stroke: '#9ca3af', strokeWidth: 1, strokeDasharray: '4 3' }}
+              cursor={{ stroke: isDark ? '#4a5568' : '#9ca3af', strokeWidth: 1, strokeDasharray: '4 3' }}
             />
 
             <Area
               type="monotone"
               dataKey="income"
-              stroke="#4bbfd4"
+              stroke={incomeStroke}
               strokeWidth={2.5}
               fill="url(#incomeGradient)"
               dot={false}
-              activeDot={<CustomDot stroke="#4bbfd4" />}
+              activeDot={<CustomDot stroke={incomeStroke} />}
             />
 
             <Area
               type="monotone"
               dataKey="expenses"
-              stroke="#374151"
+              stroke={expenseStroke}
               strokeWidth={2.5}
               fill="url(#expensesGradient)"
               dot={false}
-              activeDot={<CustomDot stroke="#374151" />}
+              activeDot={<CustomDot stroke={expenseStroke} />}
             />
           </AreaChart>
         </ResponsiveContainer>

@@ -100,6 +100,121 @@
   --shadow-none:  none;
 }
 
+/* ─── Theme tokens: light (default) ───────────────────────────────── */
+:root, [data-theme="light"] {
+  /* Panel / card surfaces (hardcoded in components) */
+  --c-panel:           #d6e8f0;
+  --c-card:            #ffffff;
+  --c-input:           #eaf3f7;
+  --c-border:          #b8ccd6;
+  --c-divider:         #c5d8e2;
+
+  /* Text hierarchy */
+  --c-text-1:          #111827;
+  --c-text-2:          #374151;
+  --c-text-3:          #6b7280;
+  --c-text-4:          #7a90a0;
+
+  /* Interactive */
+  --c-row-hover:       #eaf3f7;
+  --c-modal-bg:        #d6e8f0;
+  --c-overlay:         rgba(0, 0, 0, 0.35);
+  --c-modal-shadow:    rgba(0, 0, 0, 0.18);
+
+  /* Pills / Buttons */
+  --c-pill-active-bg:    #111827;
+  --c-pill-active-text:  #ffffff;
+  --c-pill-inactive-text:#6b7280;
+  --c-btn-dark-bg:       #111827;
+  --c-btn-dark-text:     #ffffff;
+
+  /* Sidebar / BottomNav */
+  --c-nav-bg:            #111827;
+
+  /* Charts */
+  --c-chart-grid:        #b8cdd6;
+  --c-income-line:       #4bbfd4;
+  --c-expense-line:      #374151;
+  --c-tick-fill:         #6b7280;
+
+  /* Income / Expense semantics */
+  --c-income-text:          #2ab5a5;
+  --c-income-badge-bg:      #d1fae5;
+  --c-income-badge-text:    #065f46;
+  --c-expense-badge-bg:     #fee2e2;
+  --c-expense-badge-text:   #991b1b;
+
+  /* Dropdown */
+  --c-dropdown-bg:       #ffffff;
+  --c-dropdown-hover:    #f8fafb;
+  --c-dropdown-selected: #ecf5f7;
+
+  /* Cancel button */
+  --c-cancel-border:  #b0c8d4;
+  --c-cancel-text:    #374151;
+}
+
+/* ─── Theme tokens: dark ───────────────────────────────────────────── */
+[data-theme="dark"] {
+  /* Override existing CSS system vars so all var(--color-*) users flip automatically */
+  --color-surface:                   #0F1117;
+  --color-surface-dim:               #0a0d12;
+  --color-surface-container-low:     #252A3D;
+  --color-surface-container:         #2A2D3E;
+  --color-surface-container-high:    #2E3348;
+  --color-surface-container-highest: #323850;
+  --color-surface-container-lowest:  #1E2130;
+  --color-surface-variant:           #1E2130;
+  --color-on-surface:                #F0F0F0;
+  --color-on-surface-variant:        #8A8FA8;
+  --color-outline-variant:           #2A2D3E;
+  --shadow-float:  0 12px 40px 0 rgba(0, 0, 0, 0.35);
+  --shadow-modal:  0 16px 56px 0 rgba(0, 0, 0, 0.55);
+
+  /* New component tokens */
+  --c-panel:           #1E2130;
+  --c-card:            #252A3D;
+  --c-input:           #252A3D;
+  --c-border:          #2A2D3E;
+  --c-divider:         #2A2D3E;
+
+  --c-text-1:          #F0F0F0;
+  --c-text-2:          #C0C5D8;
+  --c-text-3:          #8A8FA8;
+  --c-text-4:          #8A8FA8;
+
+  --c-row-hover:       #252A3D;
+  --c-modal-bg:        #1E2130;
+  --c-overlay:         rgba(0, 0, 0, 0.65);
+  --c-modal-shadow:    rgba(0, 0, 0, 0.55);
+
+  --c-pill-active-bg:    #F0F0F0;
+  --c-pill-active-text:  #111827;
+  --c-pill-inactive-text:#8A8FA8;
+  --c-btn-dark-bg:       #2DD4BF;
+  --c-btn-dark-text:     #0F1117;
+
+  --c-nav-bg:            #1A1A2E;
+
+  --c-chart-grid:        #2A2D3E;
+  --c-income-line:       #2DD4BF;
+  --c-expense-line:      #8A8FA8;
+  --c-tick-fill:         #8A8FA8;
+
+  --c-income-text:          #2DD4BF;
+  --c-income-badge-bg:      #1A3A2A;
+  --c-income-badge-text:    #4ADE80;
+  --c-expense-badge-bg:     #3A1A1A;
+  --c-expense-badge-text:   #F87171;
+
+  --c-dropdown-bg:       #1E2130;
+  --c-dropdown-hover:    #252A3D;
+  --c-dropdown-selected: #2A2D3E;
+
+  --c-cancel-border:  #2A2D3E;
+  --c-cancel-text:    #C0C5D8;
+}
+
 /* ─── Global Base ───────────────────────────────────────────────────── */
 @layer base {
   *, *::before, *::after {
@@ -117,6 +232,7 @@
     line-height: var(--leading-editorial);
     background-color: var(--color-surface);
     color: var(--color-on-surface);
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -286,6 +402,7 @@
   /* ── Responsive layout: sidebar ↔ bottom nav ─────────────────────── */
   .sidebar-desktop {
     display: flex;
+    transition: background-color 0.25s ease;
   }
   @media (max-width: 1023px) {
     .sidebar-desktop {

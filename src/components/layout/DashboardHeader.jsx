@@ -1,10 +1,11 @@
-// Top header with greeting, role dropdown, and utility icon group
+// Top header with greeting, role dropdown, theme toggle, and utility icon group
 import { useFinanceStore } from '../../store/useFinanceStore';
-import { Calendar, Timer, Bell, User } from 'lucide-react';
+import { Calendar, Timer, Bell, User, Sun, Moon } from 'lucide-react';
 import DropdownSelect from '../DropdownSelect';
 
 export default function DashboardHeader() {
-  const { role, setRole } = useFinanceStore();
+  const { role, setRole, theme, setTheme } = useFinanceStore();
+  const isDark = theme === 'dark';
 
   const utilityIconStyle = {
     width: '38px',
@@ -16,7 +17,7 @@ export default function DashboardHeader() {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'var(--color-surface-container-low)',
-    color: '#374151',
+    color: 'var(--c-text-2)',
     transition: 'background-color 0.15s ease',
   };
 
@@ -55,8 +56,37 @@ export default function DashboardHeader() {
 
       </div>
 
-      {/* Right: utility icons + avatar */}
+      {/* Right: theme toggle + utility icons + avatar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+
+        {/* Dark / Light mode toggle */}
+        <button
+          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 14px',
+            borderRadius: '9999px',
+            border: `1px solid var(--c-border)`,
+            backgroundColor: 'var(--color-surface-container-low)',
+            color: 'var(--c-text-2)',
+            cursor: 'pointer',
+            fontFamily: "'Manrope', sans-serif",
+            fontSize: '12px',
+            fontWeight: '600',
+            transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease',
+            marginRight: '4px',
+          }}
+        >
+          {isDark
+            ? <Sun size={14} strokeWidth={2} />
+            : <Moon size={14} strokeWidth={2} />
+          }
+          {isDark ? 'Light' : 'Dark'}
+        </button>
+
         {[
           { Icon: Calendar, label: 'Calendar' },
           { Icon: Timer,    label: 'Timer' },

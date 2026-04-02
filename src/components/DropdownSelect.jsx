@@ -55,8 +55,8 @@ export default function DropdownSelect({ options = [], value, onChange, labelMap
           padding: '8px 16px',
           borderRadius: '9999px',
           border: 'none',
-          backgroundColor: '#111827',
-          color: '#ffffff',
+          backgroundColor: 'var(--c-btn-dark-bg)',
+          color: 'var(--c-btn-dark-text)',
           cursor: 'pointer',
           fontFamily: "'Manrope', sans-serif",
           fontSize: '13px',
@@ -81,9 +81,10 @@ export default function DropdownSelect({ options = [], value, onChange, labelMap
           ref={panelRef}
           style={{
             ...panelStyle,
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--c-dropdown-bg)',
             borderRadius: '14px',
             overflow: 'hidden',
+            border: '1px solid var(--c-border)',
             boxShadow: '0 12px 40px rgba(20,29,31,0.12)',
             minWidth: '160px',
           }}
@@ -102,11 +103,11 @@ export default function DropdownSelect({ options = [], value, onChange, labelMap
                 fontFamily: "'Manrope', sans-serif",
                 fontSize: '13px',
                 fontWeight: value === opt ? '700' : '500',
-                backgroundColor: value === opt ? '#ecf5f7' : 'transparent',
-                color: 'var(--color-on-surface)',
+                backgroundColor: value === opt ? 'var(--c-dropdown-selected)' : 'transparent',
+                color: 'var(--c-text-1)',
                 transition: 'background-color 0.12s ease',
               }}
-              onMouseEnter={(e) => { if (value !== opt) e.currentTarget.style.backgroundColor = '#f8fafb'; }}
+              onMouseEnter={(e) => { if (value !== opt) e.currentTarget.style.backgroundColor = 'var(--c-dropdown-hover)'; }}
               onMouseLeave={(e) => { if (value !== opt) e.currentTarget.style.backgroundColor = 'transparent'; }}
             >
               {getLabel(opt)}

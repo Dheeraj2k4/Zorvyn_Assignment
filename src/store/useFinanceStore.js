@@ -21,11 +21,13 @@ export const useFinanceStore = create((set, get) => ({
   categoryFilter: 'All',
   sortConfig: { key: 'date', direction: 'desc' },
   timePeriod: 'This Month',                    // 'This Month' | 'Last Month' | 'Year'
+  theme: 'light',                              // 'light' | 'dark'
 
   setRole: (role) => set({ role }),
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setCategoryFilter: (categoryFilter) => set({ categoryFilter }),
   setSortConfig: (sortConfig) => set({ sortConfig }),
+  setTheme: (theme) => set({ theme }),
 
   setTimePeriod: (timePeriod) => set((state) => ({
     timePeriod,

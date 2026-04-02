@@ -36,7 +36,7 @@ export default function Sidebar() {
         style={{
           width: '72px',
           height: '100%',
-          backgroundColor: '#111827',
+          backgroundColor: 'var(--c-nav-bg)',
           borderRadius: '20px',
           display: 'flex',
           flexDirection: 'column',

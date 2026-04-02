@@ -38,7 +38,7 @@ export default function BottomNav() {
       >
         <nav
           style={{
-            backgroundColor: '#111827',
+            backgroundColor: 'var(--c-nav-bg)',
             borderRadius: '20px',
             display: 'flex',
             justifyContent: 'space-around',

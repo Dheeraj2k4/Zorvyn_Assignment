@@ -1,21 +1,21 @@
 // Reusable donut chart showing spending breakdown by category with percentage labels and a legend
 import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { useFinanceStore } from '../store/useFinanceStore';
 
-const CATEGORY_COLORS = {
+const CATEGORY_COLORS_LIGHT = {
   Food:     '#2ab5a5',
   Travel:   '#2d3748',
   Shopping: '#6b8fa8',
   Bills:    '#a8ccd8',
 };
+const CATEGORY_COLORS_DARK = {
+  Food:     '#2DD4BF',
+  Travel:   '#4a5568',
+  Shopping: '#6b8fa8',
+  Bills:    '#a8d8e2',
+};
 const FALLBACK_COLOR = '#94a3b8';
-
-const DEFAULT_DATA = [
-  { name: 'Food',     value: 35, color: '#2ab5a5' },
-  { name: 'Travel',   value: 25, color: '#2d3748' },
-  { name: 'Shopping', value: 20, color: '#6b8fa8' },
-  { name: 'Bills',    value: 20, color: '#a8ccd8' },
-];
 
 const RADIAN = Math.PI / 180;
 
@@ -43,6 +43,17 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
 };
 
 export default function SpendingCategoryChart({ transactions = [], title = 'Spending Category' }) {
+  const isDark = useFinanceStore(s => s.theme === 'dark');
+  const CATEGORY_COLORS = isDark ? CATEGORY_COLORS_DARK : CATEGORY_COLORS_LIGHT;
+  const DEFAULT_DATA = [
+    { name: 'Food',     value: 35, color: CATEGORY_COLORS.Food },
+    { name: 'Travel',   value: 25, color: CATEGORY_COLORS.Travel },
+    { name: 'Shopping', value: 20, color: CATEGORY_COLORS.Shopping },
+    { name: 'Bills',    value: 20, color: CATEGORY_COLORS.Bills },
+  ];
+  const legendTextColor = isDark ? '#C0C5D8' : '#374151';
+  const panelBg = isDark ? '#1E2130' : '#d6e8f0';
+
   const chartData = useMemo(() => {
     const expenses = transactions.filter(t => t.type === 'Expense');
     if (expenses.length === 0) return DEFAULT_DATA;
@@ -62,7 +73,7 @@ export default function SpendingCategoryChart({ transactions = [], title = 'Spen
   return (
     <div
       style={{
-        backgroundColor: '#d6e8f0',
+        backgroundColor: panelBg,
         borderRadius: '20px',
         padding: '24px',
         fontFamily: "'Poppins', sans-serif",
@@ -79,7 +90,7 @@ export default function SpendingCategoryChart({ transactions = [], title = 'Spen
           margin: 0,
           fontSize: '18px',
           fontWeight: '700',
-          color: '#111827',
+          color: 'var(--c-text-1)',
           fontFamily: "'Poppins', sans-serif",
           flexShrink: 0,
         }}
@@ -135,7 +146,7 @@ export default function SpendingCategoryChart({ transactions = [], title = 'Spen
                 style={{
                   fontSize: '13px',
                   fontWeight: '500',
-                  color: '#374151',
+                  color: legendTextColor,
                   fontFamily: "'Poppins', sans-serif",
                 }}
               >

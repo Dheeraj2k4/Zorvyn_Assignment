@@ -18,31 +18,32 @@ function DeleteConfirmModal({ transaction, onConfirm, onCancel }) {
     <div style={{
       position: 'fixed', inset: 0, zIndex: 200,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      backgroundColor: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(3px)',
+      backgroundColor: 'var(--c-overlay)', backdropFilter: 'blur(3px)',
     }}>
       <div style={{
-        backgroundColor: '#fff', borderRadius: '18px', padding: '28px 24px',
+        backgroundColor: 'var(--c-card)', borderRadius: '18px', padding: '28px 24px',
         width: '100%', maxWidth: '340px', fontFamily: "'Poppins', sans-serif",
-        boxShadow: '0 8px 32px rgba(0,0,0,0.18)', textAlign: 'center',
+        boxShadow: '0 8px 32px var(--c-modal-shadow)', textAlign: 'center',
+        border: '1px solid var(--c-border)',
         margin: '0 16px',
       }}>
         <div style={{
           width: '48px', height: '48px', borderRadius: '50%',
-          backgroundColor: '#fee2e2', display: 'flex', alignItems: 'center',
+          backgroundColor: 'var(--c-expense-badge-bg)', display: 'flex', alignItems: 'center',
           justifyContent: 'center', margin: '0 auto 16px',
         }}>
-          <Trash2 size={22} color="#ba1a1a" />
+          <Trash2 size={22} color="var(--c-expense-badge-text)" />
         </div>
-        <h3 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: '700', color: '#111827' }}>
+        <h3 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: '700', color: 'var(--c-text-1)' }}>
           Delete Transaction?
         </h3>
-        <p style={{ margin: '0 0 24px', fontSize: '13px', color: '#6b7280', lineHeight: 1.6 }}>
+        <p style={{ margin: '0 0 24px', fontSize: '13px', color: 'var(--c-text-3)', lineHeight: 1.6 }}>
           Are you sure you want to delete <strong>{transaction.description}</strong>? This cannot be undone.
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={onCancel} style={{
-            flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #d1d5db',
-            backgroundColor: 'transparent', color: '#374151', fontFamily: "'Poppins', sans-serif",
+            flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--c-cancel-border)',
+            backgroundColor: 'transparent', color: 'var(--c-cancel-text)', fontFamily: "'Poppins', sans-serif",
             fontSize: '13px', fontWeight: '600', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={onConfirm} style={{
@@ -60,40 +61,54 @@ export default function RecentTransactions({ isAdmin = true }) {
   const { transactions, addTransaction, editTransaction, deleteTransaction } = useFinanceStore();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
+  const [sort, setSort] = useState({ key: 'date', dir: 'desc' });
   const [addModal, setAddModal] = useState(false);
   const [editTx, setEditTx] = useState(null);   // transaction being edited
   const [deleteTx, setDeleteTx] = useState(null); // transaction pending delete confirm
 
+  const handleSort = (key) => {
+    setSort(prev => ({ key, dir: prev.key === key && prev.dir === 'asc' ? 'desc' : 'asc' }));
+  };
+
   const filtered = useMemo(() => {
-    return transactions.filter(t => {
+    const result = transactions.filter(t => {
       const matchSearch = t.category.toLowerCase().includes(search.toLowerCase()) ||
         t.description.toLowerCase().includes(search.toLowerCase());
       const matchCat = category === 'All' || t.category === category;
       return matchSearch && matchCat;
     });
-  }, [transactions, search, category]);
+    return [...result].sort((a, b) => {
+      if (sort.key === 'amount') {
+        return sort.dir === 'asc' ? a.amount - b.amount : b.amount - a.amount;
+      }
+      // date
+      return sort.dir === 'asc'
+        ? new Date(a.date) - new Date(b.date)
+        : new Date(b.date) - new Date(a.date);
+    });
+  }, [transactions, search, category, sort]);
 
   const th = {
     padding: '10px 0',
     fontSize: '13px',
     fontWeight: '700',
-    color: '#111827',
+    color: 'var(--c-text-1)',
     textAlign: 'left',
     fontFamily: "'Poppins', sans-serif",
-    borderBottom: '2px solid #b8ccd6',
+    borderBottom: '2px solid var(--c-border)',
   };
 
   const td = {
     padding: '14px 0',
     fontSize: '13px',
-    color: '#374151',
+    color: 'var(--c-text-2)',
     fontFamily: "'Poppins', sans-serif",
-    borderBottom: '1px solid #c5d8e2',
+    borderBottom: '1px solid var(--c-divider)',
   };
 
   return (
     <div style={{
-      backgroundColor: '#d6e8f0',
+      backgroundColor: 'var(--c-panel)',
       borderRadius: '20px',
       padding: '24px',
       fontFamily: "'Poppins', sans-serif",
@@ -102,14 +117,14 @@ export default function RecentTransactions({ isAdmin = true }) {
     }}>
       {/* Header row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>Recent Transactions</h3>
+        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: 'var(--c-text-1)' }}>Recent Transactions</h3>
         {isAdmin && (
           <button
             onClick={() => setAddModal(true)}
             style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '10px 18px', borderRadius: '10px', border: 'none',
-              backgroundColor: '#111827', color: '#fff',
+              backgroundColor: 'var(--c-btn-dark-bg)', color: 'var(--c-btn-dark-text)',
               fontFamily: "'Poppins', sans-serif", fontSize: '13px', fontWeight: '600',
               cursor: 'pointer',
             }}
@@ -123,7 +138,7 @@ export default function RecentTransactions({ isAdmin = true }) {
       {/* Filters row */}
       <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: '1', minWidth: '160px', maxWidth: '260px' }}>
-          <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#7a90a0' }} />
+          <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-text-4)' }} />
           <input
             type="text"
             placeholder="Search"
@@ -131,9 +146,9 @@ export default function RecentTransactions({ isAdmin = true }) {
             onChange={e => setSearch(e.target.value)}
             style={{
               width: '100%', padding: '9px 12px 9px 34px',
-              borderRadius: '10px', border: '1px solid #b8ccd6',
-              backgroundColor: '#eaf3f7', fontFamily: "'Poppins', sans-serif",
-              fontSize: '13px', color: '#374151', outline: 'none', boxSizing: 'border-box',
+              borderRadius: '10px', border: '1px solid var(--c-border)',
+              backgroundColor: 'var(--c-input)', fontFamily: "'Poppins', sans-serif",
+              fontSize: '13px', color: 'var(--c-text-2)', outline: 'none', boxSizing: 'border-box',
             }}
           />
         </div>
@@ -150,8 +165,19 @@ export default function RecentTransactions({ isAdmin = true }) {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={th}>Date</th>
-              <th style={th}>Amount</th>
+              <th
+                style={{ ...th, cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => handleSort('date')}
+              >
+                Date {sort.key === 'date' ? (sort.dir === 'asc' ? '↑' : '↓') : ''}
+              </th>
+              <th style={th}>Description</th>
+              <th
+                style={{ ...th, cursor: 'pointer', userSelect: 'none' }}
+                onClick={() => handleSort('amount')}
+              >
+                Amount {sort.key === 'amount' ? (sort.dir === 'asc' ? '↑' : '↓') : ''}
+              </th>
               <th style={th}>Category</th>
               <th style={th}>Type</th>
               {isAdmin && <th style={{ ...th, textAlign: 'right' }}>Actions</th>}
@@ -160,7 +186,7 @@ export default function RecentTransactions({ isAdmin = true }) {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={isAdmin ? 5 : 4} style={{ ...td, textAlign: 'center', color: '#7a90a0', padding: '28px 0' }}>
+                <td colSpan={isAdmin ? 6 : 5} style={{ ...td, textAlign: 'center', color: '#7a90a0', padding: '28px 0' }}>
                   No transactions found
                 </td>
               </tr>
@@ -168,7 +194,10 @@ export default function RecentTransactions({ isAdmin = true }) {
               filtered.map(tx => (
                 <tr key={tx.id}>
                   <td style={td}>{formatDate(tx.date)}</td>
-                  <td style={{ ...td, fontWeight: '600', color: tx.type === 'Income' ? '#2ab5a5' : '#111827' }}>
+                  <td style={{ ...td, maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {tx.description}
+                  </td>
+                  <td style={{ ...td, fontWeight: '600', color: tx.type === 'Income' ? 'var(--c-income-text)' : 'var(--c-text-1)' }}>
                     {formatCurrency(tx.amount)}
                   </td>
                   <td style={td}>{tx.category}</td>
@@ -179,7 +208,7 @@ export default function RecentTransactions({ isAdmin = true }) {
                         <button
                           title="Edit"
                           onClick={() => setEditTx(tx)}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7a90a0', padding: 0 }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--c-text-4)', padding: 0 }}
                         >
                           <Pencil size={16} />
                         </button>

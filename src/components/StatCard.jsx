@@ -138,8 +138,8 @@ export default function StatCard({ label, value, isCurrency = true, badge, badge
               borderRadius: '9999px',
               fontSize: '11px',
               fontWeight: '700',
-              backgroundColor: badgePositive ? '#d1fae5' : '#fee2e2',
-              color: badgePositive ? '#065f46' : '#991b1b',
+              backgroundColor: badgePositive ? 'var(--c-income-badge-bg)' : 'var(--c-expense-badge-bg)',
+              color: badgePositive ? 'var(--c-income-badge-text)' : 'var(--c-expense-badge-text)',
             }}
           >
             {badgePositive
