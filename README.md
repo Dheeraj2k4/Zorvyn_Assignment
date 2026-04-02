@@ -6,7 +6,7 @@ A polished, fully responsive personal finance dashboard built with **React 19**,
 
 ## Screenshots
 
-> Open `npm run dev` and view at `http://localhost:5173`
+> Run `npm run dev` and open `http://localhost:5173` in your browser.
 >
 > The dashboard supports **Light** and **Dark** modes — toggle via the **Dark** pill button in the top-right header.
 
@@ -23,6 +23,7 @@ A polished, fully responsive personal finance dashboard built with **React 19**,
 | Animation | **Framer Motion 12** | Smooth staggered entrances, spring modals, animated filter panel |
 | Icons | **Lucide React** | Consistent, tree-shakeable SVG icon set |
 | Mock API | **In-process simulation** | `setTimeout`-based async layer mimicking real network latency |
+| Design | **Stitch** | Used for UI design, layout planning, and visual prototyping before implementation |
 
 ---
 
