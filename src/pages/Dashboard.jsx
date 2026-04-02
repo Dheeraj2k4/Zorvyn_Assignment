@@ -2,7 +2,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useFinanceStore } from '../store/useFinanceStore';
-import { getChartDataByPeriod } from '../data/mockTransactions';
 
 import DashboardHeader        from '../components/layout/DashboardHeader';
 import StatCard               from '../components/StatCard';
@@ -11,6 +10,60 @@ import IncomeVsExpensesChart  from '../components/IncomeVsExpensesChart';
 import SpendingCategoryChart  from '../components/SpendingCategoryChart';
 import RecentTransactions     from '../components/RecentTransactions';
 import InsightsPanel          from '../components/insights/InsightsPanel';
+
+// Derives chart data from real transactions so the chart updates when transactions change
+const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function buildChartData(allTransactions, timePeriod) {
+  const YEAR = 2026;
+
+  if (timePeriod === 'This Month') {
+    const weeks = [
+      { label: 'Mar W1', income: 0, expenses: 0 },
+      { label: 'Mar W2', income: 0, expenses: 0 },
+      { label: 'Mar W3', income: 0, expenses: 0 },
+      { label: 'Mar W4', income: 0, expenses: 0 },
+    ];
+    allTransactions
+      .filter(t => { const d = new Date(t.date); return d.getFullYear() === YEAR && d.getMonth() === 2; })
+      .forEach(t => {
+        const day = new Date(t.date).getDate();
+        const wi = day <= 7 ? 0 : day <= 14 ? 1 : day <= 21 ? 2 : 3;
+        if (t.type === 'Income') weeks[wi].income += t.amount;
+        else weeks[wi].expenses += t.amount;
+      });
+    return weeks;
+  }
+
+  if (timePeriod === 'Last Month') {
+    const weeks = [
+      { label: 'Feb W1', income: 0, expenses: 0 },
+      { label: 'Feb W2', income: 0, expenses: 0 },
+      { label: 'Feb W3', income: 0, expenses: 0 },
+      { label: 'Feb W4', income: 0, expenses: 0 },
+    ];
+    allTransactions
+      .filter(t => { const d = new Date(t.date); return d.getFullYear() === YEAR && d.getMonth() === 1; })
+      .forEach(t => {
+        const day = new Date(t.date).getDate();
+        const wi = day <= 7 ? 0 : day <= 14 ? 1 : day <= 21 ? 2 : 3;
+        if (t.type === 'Income') weeks[wi].income += t.amount;
+        else weeks[wi].expenses += t.amount;
+      });
+    return weeks;
+  }
+
+  // Year — aggregate all transactions by calendar month
+  const months = MONTH_LABELS.map(label => ({ label, income: 0, expenses: 0 }));
+  allTransactions
+    .filter(t => new Date(t.date).getFullYear() === YEAR)
+    .forEach(t => {
+      const mi = new Date(t.date).getMonth();
+      if (t.type === 'Income') months[mi].income += t.amount;
+      else months[mi].expenses += t.amount;
+    });
+  return months;
+}
 
 // Shared fade-up animation variants
 const fadeUp = {
@@ -25,7 +78,10 @@ const fadeUp = {
 export default function Dashboard() {
   const { transactions, allTransactions, role, timePeriod } = useFinanceStore();
 
-  const chartData = useMemo(() => getChartDataByPeriod(timePeriod), [timePeriod]);
+  const chartData = useMemo(
+    () => buildChartData(allTransactions, timePeriod),
+    [allTransactions, timePeriod]
+  );
 
   const { totalBalance, totalIncome, totalExpenses, savings, highestCategory, monthlyChangePct, incomeChangePct, expenseChangePct } = useMemo(() => {
     // Current-period totals (derived from the already-filtered `transactions` slice)
@@ -147,8 +203,8 @@ export default function Dashboard() {
         <div className="db-mobile-insights">
           <div style={{ backgroundColor: 'var(--c-card)', borderRadius: '16px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '6px', boxShadow: '0 2px 8px rgba(20,29,31,0.04)', border: '1px solid var(--c-border)' }}>
             <span style={{ fontSize: '13px', fontWeight: '500', fontFamily: "'Manrope', sans-serif", color: 'var(--c-text-3)' }}>Monthly Change</span>
-            <span style={{ fontSize: '1.5rem', fontWeight: '800', fontFamily: "'Plus Jakarta Sans', sans-serif", color: monthlyChangePct >= 0 ? 'var(--c-text-1)' : 'var(--c-expense-badge-text)', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-              {monthlyChangePct >= 0 ? '+' : ''}{monthlyChangePct}%
+            <span style={{ fontSize: '1.5rem', fontWeight: '800', fontFamily: "'Plus Jakarta Sans', sans-serif", color: monthlyChangePct === null ? 'var(--c-text-3)' : monthlyChangePct >= 0 ? 'var(--c-text-1)' : 'var(--c-expense-badge-text)', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+              {monthlyChangePct === null ? '—' : `${monthlyChangePct >= 0 ? '+' : ''}${monthlyChangePct}%`}
             </span>
           </div>
           <div style={{ backgroundColor: 'var(--c-card)', borderRadius: '16px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '6px', boxShadow: '0 2px 8px rgba(20,29,31,0.04)', border: '1px solid var(--c-border)' }}>
@@ -170,7 +226,7 @@ export default function Dashboard() {
         className="db-insights"
         variants={fadeUp} initial="hidden" animate="visible" custom={8}
       >
-        <InsightsPanel transactions={transactions} />
+        <InsightsPanel transactions={transactions} monthlyChangePct={monthlyChangePct} />
       </motion.aside>
     </div>
   );

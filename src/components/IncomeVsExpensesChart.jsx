@@ -10,20 +10,7 @@ import {
 } from 'recharts';
 import { useFinanceStore } from '../store/useFinanceStore';
 
-const defaultData = [
-  { label: 'Jan', income: 5780,  expenses: 1444 },
-  { label: 'Feb', income: 6150,  expenses: 980  },
-  { label: 'Mar', income: 6400,  expenses: 1385 },
-  { label: 'Apr', income: 5200,  expenses: 1100 },
-  { label: 'May', income: 6800,  expenses: 1260 },
-  { label: 'Jun', income: 7200,  expenses: 1500 },
-  { label: 'Jul', income: 6900,  expenses: 1350 },
-  { label: 'Aug', income: 7500,  expenses: 1620 },
-  { label: 'Sep', income: 6700,  expenses: 1450 },
-  { label: 'Oct', income: 7100,  expenses: 1380 },
-  { label: 'Nov', income: 6600,  expenses: 1200 },
-  { label: 'Dec', income: 7800,  expenses: 1700 },
-];
+const defaultData = [];
 
 const formatYAxis = (value) => {
   if (value === 0) return '0';

@@ -99,17 +99,17 @@ export default function SpendingCategoryChart({ transactions = [], title = 'Spen
       </h3>
 
       {/* Chart + Legend row — fills remaining space */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '16px', minHeight: 0 }}>
-        {/* Donut — fills available height */}
-        <div style={{ flex: 1, height: '100%', minHeight: '200px', outline: 'none' }}>
-          <ResponsiveContainer width="100%" height="100%">
+      <div className="pie-chart-row">
+        {/* Donut — fixed pixel height so Recharts can always measure it */}
+        <div className="pie-chart-canvas" style={{ outline: 'none' }}>
+          <ResponsiveContainer width="100%" height={280}>
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                innerRadius={65}
-                outerRadius={105}
+                innerRadius="40%"
+                outerRadius="68%"
                 paddingAngle={2}
                 dataKey="value"
                 labelLine={false}

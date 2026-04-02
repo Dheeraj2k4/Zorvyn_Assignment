@@ -452,16 +452,16 @@ export default function RecentTransactions({ isAdmin = true }) {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ ...th, cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('date')}>
+              <th style={{ ...th, cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }} onClick={() => handleSort('date')}>
                 Date {sort.key === 'date' ? (sort.dir === 'asc' ? '↑' : '↓') : ''}
               </th>
-              <th style={th}>Description</th>
-              <th style={{ ...th, cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('amount')}>
+              <th className="tx-col-desc" style={th}>Description</th>
+              <th style={{ ...th, cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }} onClick={() => handleSort('amount')}>
                 Amount {sort.key === 'amount' ? (sort.dir === 'asc' ? '↑' : '↓') : ''}
               </th>
-              <th style={th}>Category</th>
-              <th style={th}>Type</th>
-              {isAdmin && <th style={{ ...th, textAlign: 'right' }}>Actions</th>}
+              <th style={{ ...th, whiteSpace: 'nowrap' }}>Category</th>
+              <th style={{ ...th, whiteSpace: 'nowrap' }}>Type</th>
+              {isAdmin && <th style={{ ...th, textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -490,9 +490,11 @@ export default function RecentTransactions({ isAdmin = true }) {
                     exit={{ opacity: 0, x: 12 }}
                     transition={{ duration: 0.2, delay: i < 8 ? i * 0.03 : 0 }}
                   >
-                    <td style={td}>{formatDate(tx.date)}</td>
-                    <td style={{ ...td, maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {tx.description}
+                    <td style={{ ...td, whiteSpace: 'nowrap' }}>{formatDate(tx.date)}</td>
+                    <td className="tx-col-desc" style={{ ...td, maxWidth: '180px' }}>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
+                        {tx.description}
+                      </div>
                     </td>
                     <td style={{ ...td, fontWeight: '600', color: tx.type === 'Income' ? 'var(--c-income-text)' : 'var(--c-text-1)' }}>
                       {formatCurrency(tx.amount)}

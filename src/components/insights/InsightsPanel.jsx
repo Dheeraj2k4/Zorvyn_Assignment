@@ -1,11 +1,9 @@
 // Right-panel displaying computed financial insights — three plain white cards on a light surface
 import { useMemo } from 'react';
-import { useFinanceStore } from '../../store/useFinanceStore';
 
-export default function InsightsPanel({ transactions = [] }) {
-  const { allTransactions } = useFinanceStore();
+export default function InsightsPanel({ transactions = [], monthlyChangePct = null }) {
 
-  const { highestCategory, highestAmount, monthlyChangePct, insightTip } = useMemo(() => {
+  const { highestCategory, highestAmount, insightTip } = useMemo(() => {
     const expenseByCategory = {};
     transactions.filter(t => t.type === 'Expense').forEach(t => {
       expenseByCategory[t.category] = (expenseByCategory[t.category] || 0) + t.amount;
@@ -14,23 +12,14 @@ export default function InsightsPanel({ transactions = [] }) {
     const topCat = sorted[0]?.[0] ?? '—';
     const topAmt = sorted[0]?.[1] ?? 0;
 
-    // Dynamic month-over-month expense comparison (March vs February)
-    const marchExp = allTransactions
-      .filter(t => t.type === 'Expense' && new Date(t.date).getMonth() === 2)
-      .reduce((s, t) => s + t.amount, 0);
-    const febExp = allTransactions
-      .filter(t => t.type === 'Expense' && new Date(t.date).getMonth() === 1)
-      .reduce((s, t) => s + t.amount, 0);
-    const changePct = febExp === 0 ? 0 : Math.round(((marchExp - febExp) / febExp) * 100);
-
     const tip = topCat !== '—'
       ? `Your highest spend this period is ${topCat} (₹${topAmt.toLocaleString('en-IN', { maximumFractionDigits: 0 })}). Consider reviewing this category to find savings.`
       : 'No expense data available for the selected period.';
 
-    return { highestCategory: topCat, highestAmount: topAmt, monthlyChangePct: changePct, insightTip: tip };
-  }, [transactions, allTransactions]);
+    return { highestCategory: topCat, highestAmount: topAmt, insightTip: tip };
+  }, [transactions]);
 
-  const isPositiveChange = monthlyChangePct >= 0;
+  const isPositiveChange = monthlyChangePct !== null && monthlyChangePct >= 0;
 
   // Shared card style
   const cardStyle = {
@@ -94,7 +83,7 @@ export default function InsightsPanel({ transactions = [] }) {
       <div style={cardStyle}>
         <span style={labelStyle}>Monthly Change</span>
         <span style={{ ...valueStyle, color: isPositiveChange ? 'var(--c-text-1)' : 'var(--c-expense-badge-text)' }}>
-          {isPositiveChange ? '+' : ''}{monthlyChangePct}%
+          {monthlyChangePct === null ? '—' : `${isPositiveChange ? '+' : ''}${monthlyChangePct}%`}
         </span>
       </div>
 
