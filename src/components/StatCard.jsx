@@ -142,9 +142,9 @@ export default function StatCard({ label, value, isCurrency = true, badge, badge
               color: badgePositive ? 'var(--c-income-badge-text)' : 'var(--c-expense-badge-text)',
             }}
           >
-            {badgePositive
-              ? <TrendingUp size={11} strokeWidth={2.5} />
-              : <TrendingDown size={11} strokeWidth={2.5} />
+            {badge.startsWith('-')
+              ? <TrendingDown size={11} strokeWidth={2.5} />
+              : <TrendingUp size={11} strokeWidth={2.5} />
             }
             {badge}
           </span>
