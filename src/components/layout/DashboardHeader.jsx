@@ -1,7 +1,14 @@
 // Top header with greeting, role dropdown, theme toggle, and utility icon group
 import { useFinanceStore } from '../../store/useFinanceStore';
-import { Calendar, Timer, Bell, User, Sun, Moon } from 'lucide-react';
+import { Calendar, Timer, Bell, Sun, Moon } from 'lucide-react';
 import DropdownSelect from '../DropdownSelect';
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 export default function DashboardHeader() {
   const { role, setRole, theme, setTheme } = useFinanceStore();
@@ -44,7 +51,7 @@ export default function DashboardHeader() {
             lineHeight: 1.15,
           }}
         >
-          Good morning, Dheeraj!
+          {getGreeting()}, Dheeraj!
         </h1>
 
         {/* Role dropdown */}
@@ -90,7 +97,6 @@ export default function DashboardHeader() {
         {[
           { Icon: Calendar, label: 'Calendar' },
           { Icon: Timer,    label: 'Timer' },
-          { Icon: Bell,     label: 'Notifications' },
         ].map(({ Icon, label }) => (
           <button
             key={label}
@@ -103,22 +109,55 @@ export default function DashboardHeader() {
           </button>
         ))}
 
-        {/* Avatar circle */}
+        {/* Bell with notification dot */}
+        <button
+          title="Notifications"
+          style={{ ...utilityIconStyle, position: 'relative', border: '1.5px solid var(--c-border)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface-container)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface-container-low)'; }}
+        >
+          <Bell size={17} strokeWidth={1.75} />
+          <span
+            style={{
+              position: 'absolute',
+              top: '7px',
+              right: '7px',
+              width: '7px',
+              height: '7px',
+              borderRadius: '50%',
+              backgroundColor: '#ef4444',
+              border: '1.5px solid var(--color-surface-container-low)',
+            }}
+          />
+        </button>
+
+        {/* Avatar — user initials */}
         <div
+          title="Profile"
           style={{
             width: '38px',
             height: '38px',
             borderRadius: '50%',
-            backgroundColor: 'var(--color-surface-container-highest)',
+            background: 'linear-gradient(135deg, var(--color-secondary) 0%, var(--color-tertiary) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginLeft: '4px',
             cursor: 'pointer',
-            overflow: 'hidden',
+            flexShrink: 0,
           }}
         >
-          <User size={19} color="#5f5e5e" strokeWidth={1.75} />
+          <span
+            style={{
+              fontSize: '13px',
+              fontWeight: '700',
+              color: '#ffffff',
+              fontFamily: "'Poppins', sans-serif",
+              letterSpacing: '0.03em',
+            }}
+          >
+            DJ
+          </span>
         </div>
       </div>
     </div>

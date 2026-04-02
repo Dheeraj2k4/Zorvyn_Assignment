@@ -1,22 +1,34 @@
 // Main dashboard page — assembles all sections: header, stat cards, charts, transactions, and insights
 import { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useFinanceStore } from '../store/useFinanceStore';
 import { getChartDataByPeriod } from '../data/mockTransactions';
 
-import DashboardHeader     from '../components/layout/DashboardHeader';
-import StatCard            from '../components/StatCard';
-import PillTabs            from '../components/PillTabs';
+import DashboardHeader        from '../components/layout/DashboardHeader';
+import StatCard               from '../components/StatCard';
+import PillTabs               from '../components/PillTabs';
 import IncomeVsExpensesChart  from '../components/IncomeVsExpensesChart';
 import SpendingCategoryChart  from '../components/SpendingCategoryChart';
-import RecentTransactions  from '../components/RecentTransactions';
-import InsightsPanel       from '../components/insights/InsightsPanel';
+import RecentTransactions     from '../components/RecentTransactions';
+import InsightsPanel          from '../components/insights/InsightsPanel';
+
+// Shared fade-up animation variants
+const fadeUp = {
+  hidden:  { opacity: 0, y: 20 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: 'easeOut', delay: i * 0.08 },
+  }),
+};
 
 export default function Dashboard() {
   const { transactions, allTransactions, role, timePeriod } = useFinanceStore();
 
   const chartData = useMemo(() => getChartDataByPeriod(timePeriod), [timePeriod]);
 
-  const { totalBalance, totalIncome, totalExpenses, savings, highestCategory, monthlyChangePct } = useMemo(() => {
+  const { totalBalance, totalIncome, totalExpenses, savings, highestCategory, monthlyChangePct, incomeChangePct, expenseChangePct } = useMemo(() => {
+    // Current-period totals (derived from the already-filtered `transactions` slice)
     let income = 0;
     let expense = 0;
     const byCat = {};
@@ -29,14 +41,25 @@ export default function Dashboard() {
     });
     const topCat = Object.entries(byCat).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—';
 
-    // Dynamic month-over-month expense comparison (March vs February)
-    const marchExp = allTransactions
-      .filter(t => t.type === 'Expense' && new Date(t.date).getMonth() === 2)
+    // Previous-period filter — adapts to whichever tab is selected
+    const YEAR = 2026;
+    const prevFilter = (t) => {
+      const d = new Date(t.date);
+      if (timePeriod === 'This Month') return d.getFullYear() === YEAR && d.getMonth() === 1; // Feb
+      if (timePeriod === 'Last Month') return d.getFullYear() === YEAR && d.getMonth() === 0; // Jan
+      return d.getFullYear() === YEAR - 1; // Prior year for "Year" tab
+    };
+
+    const prevIncome = allTransactions
+      .filter(t => t.type === 'Income' && prevFilter(t))
       .reduce((s, t) => s + t.amount, 0);
-    const febExp = allTransactions
-      .filter(t => t.type === 'Expense' && new Date(t.date).getMonth() === 1)
+    const prevExpense = allTransactions
+      .filter(t => t.type === 'Expense' && prevFilter(t))
       .reduce((s, t) => s + t.amount, 0);
-    const changePct = febExp === 0 ? 0 : Math.round(((marchExp - febExp) / febExp) * 100);
+
+    // null means no prior-period data (badge hidden rather than showing ÷0)
+    const incomeChangePct  = prevIncome  === 0 ? null : Math.round(((income  - prevIncome)  / prevIncome)  * 100);
+    const expenseChangePct = prevExpense === 0 ? null : Math.round(((expense - prevExpense) / prevExpense) * 100);
 
     return {
       totalBalance: income - expense,
@@ -44,9 +67,11 @@ export default function Dashboard() {
       totalExpenses: expense,
       savings: Math.max(0, (income - expense) * 0.034),
       highestCategory: topCat,
-      monthlyChangePct: changePct,
+      monthlyChangePct: expenseChangePct,
+      incomeChangePct,
+      expenseChangePct,
     };
-  }, [transactions, allTransactions]);
+  }, [transactions, allTransactions, timePeriod]);
 
   return (
     <div
@@ -72,37 +97,51 @@ export default function Dashboard() {
         }}
       >
         {/* Header */}
-        <DashboardHeader />
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0}>
+          <DashboardHeader />
+        </motion.div>
 
-        {/* Stat Cards */}
+        {/* Stat Cards — staggered */}
         <div
           className="db-stat-grid"
-          style={{
-            display: 'grid',
-            gap: '16px',
-          }}
+          style={{ display: 'grid', gap: '16px' }}
         >
-          <StatCard label="Total Balance"  value={totalBalance}  />
-          <StatCard label="Total Income"   value={totalIncome}   badge="+5%"  badgePositive />
-          <StatCard label="Total Expenses" value={totalExpenses} badge="-2%"  badgePositive={false} />
-          <StatCard label="Savings"        value={savings}       />
+          {[
+            { label: 'Total Balance',  value: totalBalance },
+            {
+              label: 'Total Income',
+              value: totalIncome,
+              badge: incomeChangePct !== null ? `${incomeChangePct >= 0 ? '+' : ''}${incomeChangePct}%` : undefined,
+              badgePositive: incomeChangePct >= 0,
+            },
+            {
+              label: 'Total Expenses',
+              value: totalExpenses,
+              badge: expenseChangePct !== null ? `${expenseChangePct >= 0 ? '+' : ''}${expenseChangePct}%` : undefined,
+              badgePositive: expenseChangePct < 0,   // expenses going DOWN is good (green)
+            },
+            { label: 'Savings',        value: savings },
+          ].map((card, i) => (
+            <motion.div key={card.label} variants={fadeUp} initial="hidden" animate="visible" custom={i + 1}>
+              <StatCard {...card} />
+            </motion.div>
+          ))}
         </div>
 
         {/* Time range tabs */}
-        <PillTabs tabs={['This Month', 'Last Month', 'Year']} />
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={5}>
+          <PillTabs tabs={['This Month', 'Last Month', 'Year']} />
+        </motion.div>
 
         {/* Charts side-by-side */}
-        <div
+        <motion.div
           className="db-charts"
-          style={{
-            display: 'grid',
-            gap: '20px',
-            alignItems: 'stretch',
-          }}
+          style={{ display: 'grid', gap: '20px', alignItems: 'stretch' }}
+          variants={fadeUp} initial="hidden" animate="visible" custom={6}
         >
           <IncomeVsExpensesChart key={timePeriod} data={chartData} />
           <SpendingCategoryChart key={`pie-${timePeriod}`} transactions={transactions} />
-        </div>
+        </motion.div>
 
         {/* Mobile-only insights row — hidden on desktop (shown via .db-mobile-insights class) */}
         <div className="db-mobile-insights">
@@ -121,13 +160,18 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Transactions */}
-        <RecentTransactions isAdmin={role === 'Admin'} />
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={7}>
+          <RecentTransactions isAdmin={role === 'Admin'} />
+        </motion.div>
       </main>
 
       {/* ── Right Insights Panel — desktop only ──────────────── */}
-      <aside className="db-insights">
+      <motion.aside
+        className="db-insights"
+        variants={fadeUp} initial="hidden" animate="visible" custom={8}
+      >
         <InsightsPanel transactions={transactions} />
-      </aside>
+      </motion.aside>
     </div>
   );
 }
