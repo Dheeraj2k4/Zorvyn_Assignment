@@ -86,7 +86,9 @@ export default function TransactionModal({ mode = 'add', initial = null, onClose
               />
             </div>
             <div>
-              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--c-text-2)', display: 'block', marginBottom: '4px' }}>Date</label>
+              <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--c-text-2)', display: 'block', marginBottom: '4px' }}>
+                Date <span style={{ fontWeight: '400', color: 'var(--c-text-4)' }}>(dd/mm/yyyy)</span>
+              </label>
               <input type="date" required style={inputStyle} value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
             </div>
             <div>
