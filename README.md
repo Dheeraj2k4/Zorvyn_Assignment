@@ -4,6 +4,15 @@ A polished, fully responsive personal finance dashboard built with **React 19**,
 
 ---
 
+## Approach Overview
+
+1. **Requirements review** — Read through all the assignment requirements to understand what needed to be built.
+2. **Design research** — Looked at real-world finance dashboard designs for inspiration, then used **Stitch** to create a custom UI mockup before writing any code.
+3. **Component build-out** — Built each UI component individually (stat cards, charts, transaction table, modals, sidebar, etc.) in isolation.
+4. **Assembly** — Composed all components together into the final dashboard layout.
+5. **Polish** — Added animations, transitions, and dark mode once the core UI was stable.
+6. **Optional features** — After all required features were complete, implemented the additional ones: localStorage persistence, mock API integration, CSV/JSON export, and advanced filtering.
+
 ## Live Demo
 
 Deployed on Vercel — [zorvyn-assignment-eta.vercel.app](https://zorvyn-assignment-eta.vercel.app/)
@@ -133,6 +142,28 @@ The **Transactions table** (Admin view) shows all transactions for the selected 
 ![Transactions Table — Viewer View](image-4.png)
 
 In **Viewer mode**, the Add, Edit, and Delete controls are hidden — the table becomes read-only. This is the Role-Based Access Control (RBAC) behaviour: Admins can manage data, Viewers can only read it.
+
+---
+
+### 2. Transaction Modals
+
+Each action opens an animated modal that springs in over a blurred backdrop. Clicking outside the modal dismisses it.
+
+![Add Transaction](image-6.png)
+
+**Add Transaction** — a form to enter the description, date, amount, category, and type (Income / Expense). Only visible to Admins.
+
+---
+
+![Edit Transaction](image-7.png)
+
+**Edit Transaction** — the same form pre-filled with the existing transaction's data. Changes are saved back to the store via the mock API.
+
+---
+
+![Delete Confirmation](image-8.png)
+
+**Delete Transaction** — a confirmation dialog that asks before permanently removing a transaction, preventing accidental deletions.
 
 ---
 
