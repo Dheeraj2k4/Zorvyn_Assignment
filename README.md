@@ -4,6 +4,10 @@ A polished, fully responsive personal finance dashboard built with **React 19**,
 
 ---
 
+## Live Demo
+
+Deployed on Vercel — [zorvyn-assignment-eta.vercel.app](https://zorvyn-assignment-eta.vercel.app/)
+
 ## Screenshots
 
 > Run `npm run dev` and open `http://localhost:5173` in your browser.
