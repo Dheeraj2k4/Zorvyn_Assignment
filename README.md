@@ -17,13 +17,6 @@ A polished, fully responsive personal finance dashboard built with **React 19**,
 
 Deployed on Vercel — [zorvyn-assignment-eta.vercel.app](https://zorvyn-assignment-eta.vercel.app/)
 
-## Screenshots
-
-> Run `npm run dev` and open `http://localhost:5173` in your browser.
->
-> The dashboard supports **Light** and **Dark** modes — toggle via the **Dark** pill button in the top-right header.
-
----
 
 ## Tech Stack
 
@@ -149,19 +142,19 @@ In **Viewer mode**, the Add, Edit, and Delete controls are hidden — the table 
 
 Each action opens an animated modal that springs in over a blurred backdrop. Clicking outside the modal dismisses it.
 
-![Add Transaction](image-6.png)
+![Add Transaction](image-7.png)
 
 **Add Transaction** — a form to enter the description, date, amount, category, and type (Income / Expense). Only visible to Admins.
 
 ---
 
-![Edit Transaction](image-7.png)
+![Edit Transaction](image-8.png)
 
 **Edit Transaction** — the same form pre-filled with the existing transaction's data. Changes are saved back to the store via the mock API.
 
 ---
 
-![Delete Confirmation](image-8.png)
+![Delete Confirmation](image-6.png)
 
 **Delete Transaction** — a confirmation dialog that asks before permanently removing a transaction, preventing accidental deletions.
 
