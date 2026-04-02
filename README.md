@@ -104,7 +104,7 @@ The top of the page shows a greeting that changes based on the time of day — "
 
 ---
 
-![Stat Cards and Charts](image-1.png)
+![Stat Cards and Charts](image-9.png)
 
 Below the header you get four stat cards — **Total Balance**, **Total Income**, **Total Expenses**, and **Savings** — each with an animated number counter and a live month-over-month % badge. Under the cards are three **pill tabs** (This Month / Last Month / Year) that re-filter everything on the page when clicked. The charts section has:
 - A **line chart** comparing Income vs Expenses over time
